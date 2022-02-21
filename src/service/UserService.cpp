@@ -20,7 +20,7 @@ oatpp::Object<UserDto> UserService::updateUser(const oatpp::Object<UserDto>& dto
 
 }
 
-oatpp::Object<UserDto> UserService::getUserById(const oatpp::Int32& id, const oatpp::provider::ResourceHandle<oatpp::orm::Connection>& connection) {
+oatpp::Object<UserDto> UserService::getUserById(const oatpp::Int32& id, const std::shared_ptr<oatpp::orm::Connection>& connection) {
 
   auto dbResult = m_database->getUserById(id, connection);
   OATPP_ASSERT_HTTP(dbResult->isSuccess(), Status::CODE_500, dbResult->getErrorMessage());
@@ -49,7 +49,8 @@ oatpp::Object<PageDto<oatpp::Object<UserDto>>> UserService::getAllUsers(const oa
   auto page = PageDto<oatpp::Object<UserDto>>::createShared();
   page->offset = offset;
   page->limit = countToFetch;
-  page->count = items->size();
+  auto size = static_cast<unsigned int>(items->size());
+  page->count = size;
   page->items = items;
 
   return page;
